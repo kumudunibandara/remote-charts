@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { getUsersInfo, User } from '../../services/UserService';
+import { Box, CircularProgress } from '@mui/material';
 
 function AreaGradient({ color, id }: { color: string; id: string }) {
     return (
@@ -21,14 +22,13 @@ function AreaGradient({ color, id }: { color: string; id: string }) {
     );
 }
 
-
-
 const UserByCountrySessionChart = () => {
     const theme = useTheme();
     const [cities, setCities] = useState<string[]>([]);
     const [counts, setCounts] = useState<number[]>([]);
     const currentTheme = useSelector((state: RootState) => state.layout.theme) || 'light';
     const [totalRecordCounts, setTotalRecordCounts] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,6 +50,8 @@ const UserByCountrySessionChart = () => {
                 setCounts(dataCounts);
             } catch (error) {
                 console.error('Error fetching user data:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -58,16 +60,8 @@ const UserByCountrySessionChart = () => {
 
     const colorPalette =
         currentTheme === 'dark'
-            ? [
-                theme.palette.primary.light,
-                theme.palette.primary.main,
-                theme.palette.primary.dark,
-            ]
-            : [
-                theme.palette.primary.dark,
-                theme.palette.primary.main,
-                theme.palette.primary.light,
-            ];
+            ? [theme.palette.primary.light, theme.palette.primary.main, theme.palette.primary.dark]
+            : [theme.palette.primary.dark, theme.palette.primary.main, theme.palette.primary.light];
 
     return (
         <Card variant="outlined" sx={{ width: '100%' }}>
@@ -75,73 +69,72 @@ const UserByCountrySessionChart = () => {
                 <Typography component="h2" variant="subtitle2" gutterBottom>
                     Users by city
                 </Typography>
-                <Stack sx={{ justifyContent: 'space-between' }}>
-                    <Stack
-                        direction="row"
-                        sx={{
-                            alignContent: { xs: 'center', sm: 'flex-start' },
-                            alignItems: 'center',
-                            gap: 1,
-                        }}
-                    >
-                        <Typography variant="h4" component="p">
-                            {totalRecordCounts}
-                        </Typography>
-                        <Chip size="small" color="success" label="+35%" />
-                    </Stack>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        Users are located different cities
-                    </Typography>
-                </Stack>
-                <LineChart
-                    colors={colorPalette}
-                    xAxis={[
-                        {
-                            scaleType: 'point',
-                            data: cities,
-                            tickInterval: (i) => (i + 1) % 5 === 0,
-                        },
-                    ]}
-                    series={[
-                        {
-                            id: 'direct',
-                            label: 'Direct',
-                            showMark: false,
-                            curve: 'linear',
-                            stack: 'total',
-                            area: true,
-                            stackOrder: 'ascending',
-                            data: counts,
-                        },
-
-                    ]}
-                    height={400}
-                    margin={{ left: 50, right: 20, top: 20, bottom: 20 }}
-                    grid={{ horizontal: true }}
-                    sx={{
-                        '& .MuiAreaElement-series-organic': {
-                            fill: "url('#organic')",
-                        },
-                        '& .MuiAreaElement-series-referral': {
-                            fill: "url('#referral')",
-                        },
-                        '& .MuiAreaElement-series-direct': {
-                            fill: "url('#direct')",
-                        },
-                    }}
-                    slotProps={{
-                        legend: {
-                            hidden: true,
-                        },
-                    }}
-                >
-                    <AreaGradient color={theme.palette.primary.dark} id="organic" />
-                    <AreaGradient color={theme.palette.primary.main} id="referral" />
-                    <AreaGradient color={theme.palette.primary.light} id="direct" />
-                </LineChart>
+                {loading ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <>
+                        <Stack sx={{ justifyContent: 'space-between' }}>
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    alignContent: { xs: 'center', sm: 'flex-start' },
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}
+                            >
+                                <Typography variant="h4" component="p">
+                                    {totalRecordCounts}
+                                </Typography>
+                                <Chip size="small" color="success" label="+35%" />
+                            </Stack>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                Users are located in different cities
+                            </Typography>
+                        </Stack>
+                        <LineChart
+                            colors={colorPalette}
+                            xAxis={[
+                                {
+                                    scaleType: 'point',
+                                    data: cities,
+                                    tickInterval: (i) => (i + 1) % 5 === 0,
+                                },
+                            ]}
+                            series={[
+                                {
+                                    id: 'direct',
+                                    label: 'Direct',
+                                    showMark: false,
+                                    curve: 'linear',
+                                    stack: 'total',
+                                    area: true,
+                                    stackOrder: 'ascending',
+                                    data: counts,
+                                },
+                            ]}
+                            height={400}
+                            margin={{ left: 50, right: 20, top: 20, bottom: 20 }}
+                            grid={{ horizontal: true }}
+                            sx={{
+                                '& .MuiAreaElement-series-organic': { fill: "url('#organic')" },
+                                '& .MuiAreaElement-series-referral': { fill: "url('#referral')" },
+                                '& .MuiAreaElement-series-direct': { fill: "url('#direct')" },
+                            }}
+                            slotProps={{
+                                legend: { hidden: true },
+                            }}
+                        >
+                            <AreaGradient color={theme.palette.primary.dark} id="organic" />
+                            <AreaGradient color={theme.palette.primary.main} id="referral" />
+                            <AreaGradient color={theme.palette.primary.light} id="direct" />
+                        </LineChart>
+                    </>
+                )}
             </CardContent>
         </Card>
     );
-}
+};
 
 export default UserByCountrySessionChart;

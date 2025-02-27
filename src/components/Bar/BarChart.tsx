@@ -3,6 +3,8 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useTheme } from '@mui/material/styles';
 import { useState, useEffect } from 'react';
@@ -15,6 +17,7 @@ const UserBarChart = () => {
     const [cities, setCities] = useState<string[]>([]);
     const [counts, setCounts] = useState<number[]>([]);
     const [totalRecordCounts, setTotalRecordCounts] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
     const currentTheme = useSelector((state: RootState) => state.layout.theme) || 'light';
 
     const colorPalette =
@@ -29,6 +32,7 @@ const UserBarChart = () => {
                 theme.palette.primary.main,
                 theme.palette.primary.light,
             ];
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -48,67 +52,83 @@ const UserBarChart = () => {
                 setCounts(dataCounts);
             } catch (error) {
                 console.error('Error fetching user data:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
     }, []);
+
     return (
         <Card variant="outlined" sx={{ width: '100%' }}>
             <CardContent>
                 <Typography component="h2" variant="subtitle2" gutterBottom>
                     Users by city
                 </Typography>
-                <Stack sx={{ justifyContent: 'space-between' }}>
-                    <Stack
-                        direction="row"
-                        sx={{
-                            alignContent: { xs: 'center', sm: 'flex-start' },
-                            alignItems: 'center',
-                            gap: 1,
-                        }}
+                {loading ? (
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight="200px"
                     >
-                        <Typography variant="h4" component="p">
-                            {totalRecordCounts}
-                        </Typography>
-                        <Chip size="small" color="error" label="-8%" />
-                    </Stack>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        Users are located different cities
-                    </Typography>
-                </Stack>
-                <BarChart
-                    borderRadius={8}
-                    colors={colorPalette}
-                    xAxis={
-                        [
-                            {
-                                scaleType: 'band',
-                                categoryGapRatio: 0.5,
-                                data: cities,
-                            },
-                        ] as any
-                    }
-                    series={[
-                        {
-                            id: 'city-stats',
-                            label: 'Users count',
-                            data: counts,
-                            stack: 'A',
-                        }
-                    ]}
-                    height={400}
-                    margin={{ left: 50, right: 0, top: 20, bottom: 20 }}
-                    grid={{ horizontal: true }}
-                    slotProps={{
-                        legend: {
-                            hidden: true,
-                        },
-                    }}
-                />
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <>
+                        <Stack sx={{ justifyContent: 'space-between' }}>
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    alignContent: { xs: 'center', sm: 'flex-start' },
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}
+                            >
+                                <Typography variant="h4" component="p">
+                                    {totalRecordCounts}
+                                </Typography>
+                                <Chip size="small" color="error" label="-8%" />
+                            </Stack>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                Users are located in different cities
+                            </Typography>
+                        </Stack>
+                        <BarChart
+                            borderRadius={8}
+                            colors={colorPalette}
+                            xAxis={
+                                [
+                                    {
+                                        scaleType: 'band',
+                                        categoryGapRatio: 0.5,
+                                        data: cities,
+                                    },
+                                ] as any
+                            }
+                            series={[
+                                {
+                                    id: 'city-stats',
+                                    label: 'Users count',
+                                    data: counts,
+                                    stack: 'A',
+                                },
+                            ]}
+                            height={400}
+                            margin={{ left: 50, right: 0, top: 20, bottom: 20 }}
+                            grid={{ horizontal: true }}
+                            slotProps={{
+                                legend: {
+                                    hidden: true,
+                                },
+                            }}
+                        />
+                    </>
+                )}
             </CardContent>
         </Card>
     );
-}
+};
 
 export default UserBarChart;

@@ -44,7 +44,6 @@ export default defineConfig({
     target: "esnext",
     minify: false,
     cssCodeSplit: false,
-    assetsDir: ''
   },
   preview: {
     port: 3001,

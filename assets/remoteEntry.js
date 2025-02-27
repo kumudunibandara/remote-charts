@@ -3,13 +3,13 @@ const currentImports = {};
       let moduleMap = {
 "./BarChart":()=>{
       dynamicLoadingCss([], false, './BarChart');
-      return __federation_import('/remote-charts/__federation_expose_BarChart-DEvE6NaT.js').then(module =>Object.keys(module).every(item => exportSet.has(item)) ? () => module.default : () => module)},
+      return __federation_import('/remote-charts/assets/__federation_expose_BarChart-DEvE6NaT.js').then(module =>Object.keys(module).every(item => exportSet.has(item)) ? () => module.default : () => module)},
 "./UserByCountrySessionChart":()=>{
       dynamicLoadingCss([], false, './UserByCountrySessionChart');
-      return __federation_import('/remote-charts/__federation_expose_UserByCountrySessionChart-4jYVck_H.js').then(module =>Object.keys(module).every(item => exportSet.has(item)) ? () => module.default : () => module)},
+      return __federation_import('/remote-charts/assets/__federation_expose_UserByCountrySessionChart-4jYVck_H.js').then(module =>Object.keys(module).every(item => exportSet.has(item)) ? () => module.default : () => module)},
 "./UserPieChart":()=>{
       dynamicLoadingCss([], false, './UserPieChart');
-      return __federation_import('/remote-charts/__federation_expose_UserPieChart-CowgFybF.js').then(module =>Object.keys(module).every(item => exportSet.has(item)) ? () => module.default : () => module)},};
+      return __federation_import('/remote-charts/assets/__federation_expose_UserPieChart-CowgFybF.js').then(module =>Object.keys(module).every(item => exportSet.has(item)) ? () => module.default : () => module)},};
       const seen = {};
       const dynamicLoadingCss = (cssFilePaths, dontAppendStylesToHead, exposeItemName) => {
         const metaUrl = import.meta.url;
@@ -20,7 +20,7 @@ const currentImports = {};
 
         const curUrl = metaUrl.substring(0, metaUrl.lastIndexOf('remoteEntry.js'));
         const base = '/remote-charts/';
-        '';
+        'assets';
 
         cssFilePaths.forEach(cssPath => {
          let href = '';

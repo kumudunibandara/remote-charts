@@ -1,7 +1,7 @@
 import axios from "axios";
 //utils
 
-export const API_URL = "http://localhost:5000/users"; // Mock API URL
+export const API_URL = "https://heartpace-users.onrender.com/users"; // Mock API URL
 
 export type User = {
     id: number;

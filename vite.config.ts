@@ -12,7 +12,7 @@ export default defineConfig({
       name: "remoteCharts",
       filename: "remoteEntry.js",
       remotes: {
-        hostApp: "/host-app/assets/remoteEntry.js",
+        hostApp: "https://kumudunibandara.github.io/host-app/assets/remoteEntry.js",
       },
       exposes: {
         "./BarChart": "./src/components/Bar/BarChart",
